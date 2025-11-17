@@ -98,28 +98,68 @@ tp_atr_mult: 3.0      # Take profit (2:1 R:R minimum)
 # POSITION MANAGEMENT (Protect profits fast!)
 # ============================================
 
+# *** NEW: BULLETPROOF DYNAMIC ATR SYSTEM ***
+# This adapts to BTC's volatility and locks profit on big moves
+use_dynamic_atr_trailing: true  # Set to false to use old system
+
+# ATR settings (for volatility measurement)
+atr_period: 14
+atr_timeframe: M5  # Fast response for BTC
+
+# ATR trail multipliers by profit level
+# These adapt automatically - wider when volatile, tighter when calm
+atr_trail_multipliers:
+  initial: 2.0       # Wide trail when profit < 1x risk (let it breathe)
+  conservative: 1.5  # Normal trail when profit 1-3x risk
+  aggressive: 1.2    # Tight trail when profit > 3x risk (protect big wins!)
+  exit: 0.8          # Very tight when consolidating (take profit)
+
+# MFE (Maximum Favorable Excursion) profit locks
+# BULLETPROOF: Locks minimum profit when you hit big moves
+mfe_profit_locks:
+  - trigger_risk_multiple: 1.5  # When profit = 1.5x your risk
+    lock_pct: 30                # Lock at least 30% of best profit
+  - trigger_risk_multiple: 2.5  # When profit = 2.5x your risk
+    lock_pct: 40                # Lock at least 40% of best profit
+  - trigger_risk_multiple: 4.0  # When profit = 4x your risk (huge!)
+    lock_pct: 50                # Lock at least 50% of best profit
+
+# Reversal detection (prevents "gave it all back" syndrome)
+enable_reversal_detection: true
+reversal_threshold_pct: 25  # If price reverses 25% from best, tighten trail
+
+# Consolidation detection (exits when price stalls)
+consolidation_bars_threshold: 20  # If no new best for 20 bars, tighten trail
+
+# *** STANDARD SETTINGS (still used for break-even and partials) ***
+
 # Break-even (move SL to entry + small buffer)
 use_break_even: true
-break_even_trigger_pct: 0.3  # Move to BE at just 0.3% profit!
-break_even_buffer_pips: 2    # Small buffer above entry
+enable_break_even: true
+break_even_activation_pct: 0.3  # Move to BE at just 0.3% profit!
+break_even_buffer_pct: 0.1      # Small buffer above entry
 
-# Trailing stop
+# Trailing stop (old system - only if use_dynamic_atr_trailing = false)
 use_trailing_stop: true
+enable_trailing_stop: true
 trailing_activation_pct: 0.7  # Start trailing at 0.7% profit
 trailing_distance_pct: 0.25   # Trail tightly (0.25% from peak)
+trailing_step_pct: 0.1        # Minimum step size
 
 # Partial profit taking (CRITICAL for small accounts!)
 use_partial_close: true
-partial_close_levels:
-  - trigger_pct: 0.5   # At 0.5% profit
-    close_pct: 40      # Close 40% of position
-  - trigger_pct: 1.0   # At 1% profit
-    close_pct: 30      # Close another 30%
-  - trigger_pct: 1.5   # At 1.5% profit
-    close_pct: 30      # Close remaining 30%
+enable_partial_profit: true
+partial_profit_levels:
+  - pct: 0.5        # At 0.5% profit
+    close_pct: 40   # Close 40% of position
+  - pct: 1.0        # At 1% profit
+    close_pct: 30   # Close another 30%
+  - pct: 1.5        # At 1.5% profit
+    close_pct: 30   # Close remaining 30%
 
 # Maximum holding time
 max_position_hours: 12  # Close after 12 hours regardless
+max_position_hold_hours: 12  # Same (both keys supported)
 
 # ============================================
 # TRADING SESSIONS (Focus on best times)
