@@ -504,7 +504,9 @@ class MT5Client:
             'symbol': position.symbol,
             'type': 'BUY' if position.type == mt5.ORDER_TYPE_BUY else 'SELL',
             'volume': position.volume,
-            'price': position.price_open,
+            'price_open': position.price_open,
+            'price': position.price_open,  # Keep for backward compatibility
+            'price_current': position.price_current,
             'sl': position.sl,
             'tp': position.tp,
             'profit': position.profit,

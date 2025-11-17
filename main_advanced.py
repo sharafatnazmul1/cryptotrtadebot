@@ -1,13 +1,12 @@
 """
 Advanced Professional Trading Bot - Main Entry Point
-Fully Integrated Hedge Fund-Grade System with ALL Advanced Features
+Fully Integrated Hedge Fund-Grade System with Advanced Features
 
 This version integrates:
 - Advanced SMC/ICT indicators (Premium/Discount, OTE, Breaker Blocks, etc.)
 - Kelly Criterion and adaptive risk management
 - Multi-symbol support with correlation analysis
 - Advanced position management (trailing stops, partial profits, break-even)
-- Machine learning signal filtering
 - Telegram notifications
 - Small capital optimization
 """
@@ -37,7 +36,6 @@ from persistence import Persistence
 from indicators_advanced import AdvancedSMCIndicators
 from risk_advanced import AdvancedRiskManager
 from position_manager_advanced import AdvancedPositionManager
-from ml_signal_filter import MLSignalFilter
 from small_capital_optimizer import SmallCapitalOptimizer
 from telegram_notifier import TelegramNotifier, NotificationConfig
 
@@ -182,7 +180,6 @@ class AdvancedTradingBot:
         self.position_manager = None
         self.signal_engine = None
         self.order_manager = None
-        self.ml_filter = None
         self.telegram = None
 
         # Advanced indicators
@@ -291,12 +288,6 @@ class AdvancedTradingBot:
                 'max_position_hold_hours': pos_mgmt_params.get('max_hold_hours', 24),
             })
             self.position_manager = AdvancedPositionManager(position_config)
-
-            # Initialize ML signal filter
-            self.logger.info("✓ Initializing ML signal filter...")
-            ml_config = self.config.get('machine_learning', {})
-            ml_config['model_path'] = './models'
-            self.ml_filter = MLSignalFilter(ml_config)
 
             # Initialize Telegram notifier
             self.logger.info("✓ Initializing Telegram notifier...")
@@ -447,19 +438,6 @@ class AdvancedTradingBot:
                         self.stats['signals_filtered'] += 1
                         self.persistence.save_signal(signal, status='FILTERED_OPTIMIZER')
                         return
-
-                    # ML signal filtering
-                    if self.config.get('machine_learning', {}).get('enabled', True):
-                        ml_quality = self.ml_filter.predict_signal_quality(signal, df)
-                        signal['ml_confidence'] = ml_quality.confidence
-                        signal['ml_score'] = ml_quality.score
-
-                        min_confidence = self.config.get('machine_learning', {}).get('min_confidence', 0.6)
-                        if ml_quality.prediction == 'skip' or ml_quality.confidence < min_confidence:
-                            self.logger.info(f"❌ Signal rejected by ML: confidence {ml_quality.confidence:.2%}")
-                            self.stats['signals_filtered'] += 1
-                            self.persistence.save_signal(signal, status='FILTERED_ML')
-                            #return
 
                     # Signal passed all filters!
                     self.logger.info(f"✅ Signal approved - proceeding to trade")
@@ -628,10 +606,7 @@ class AdvancedTradingBot:
             for pos in positions:
                 if pos.get('magic') == self.config.get('magic', 0):
                     ticket = pos['ticket']
-                    if isinstance(pos, dict):
-                        current_price = pos.get('price_current', 0)  # Access dictionary key safely
-                    else:
-                        current_price = getattr(pos, 'price_current', 0)  # Access attribute
+                    current_price = pos.get('price_current', 0)
 
                     # Update position manager
                     action = self.position_manager.update_position(
