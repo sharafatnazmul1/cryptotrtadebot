@@ -66,8 +66,7 @@ signal_weights:
   htf_trend_alignment: 3      # Higher timeframe trend (critical!)
   structure_alignment: 2      # Market structure
   zone_quality: 3             # Order block/FVG quality
-  liquidity_sweep: 1          # Liquidity taken
-  ml_confidence: 1            # Machine learning confidence
+  liquidity_sweep: 2          # Liquidity taken
 
 # ============================================
 # SMC/ICT SETTINGS
@@ -166,16 +165,6 @@ max_spread: 1800  # Max spread in points (tighter for small accounts)
 
 # Minimum signal interval (prevent overtrading)
 min_signal_interval_minutes: 30  # At least 30 min between signals
-
-# ============================================
-# MACHINE LEARNING (Optional but recommended)
-# ============================================
-machine_learning:
-  enabled: false
-  min_confidence: 0.65  # 65% confidence minimum for small accounts
-  model_type: xgboost
-  retrain_every_n_trades: 100
-  min_samples_for_training: 50
 
 # ============================================
 # SYSTEM SETTINGS
