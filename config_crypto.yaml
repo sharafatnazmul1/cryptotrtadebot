@@ -1,0 +1,311 @@
+# Professional Crypto Trading Bot Configuration
+# Hedge Fund-Grade SMC/ICT Trading System
+
+# ============================================
+# TRADING SYMBOLS
+# ============================================
+symbols:
+  enabled:
+    - BTCUSD
+    - ETHUSD
+    - SOLUSD
+    - AVAXUSD
+    - MATICUSD
+
+  # Symbol-specific settings (optional overrides)
+  symbol_settings:
+    BTCUSD:
+      min_volume_24h: 5000000  # $5M minimum
+      max_spread_points: 50
+    ETHUSD:
+      min_volume_24h: 2000000
+      max_spread_points: 30
+
+# ============================================
+# TIMEFRAMES
+# ============================================
+timeframes:
+  high: H1      # Higher timeframe for trend
+  medium: M15   # Medium timeframe for structure
+  low: M5       # Lower timeframe for entry
+  entry: M1     # Entry refinement
+
+# ============================================
+# ADVANCED SMC/ICT SETTINGS
+# ============================================
+smc_ict:
+  # Order Blocks
+  order_blocks:
+    enabled: true
+    lookback: 50
+    min_strength: 2.0
+    max_age_bars: 100
+
+  # Fair Value Gaps
+  fvg:
+    enabled: true
+    min_gap_points: 5
+    max_age_bars: 50
+
+  # Liquidity Pools
+  liquidity:
+    enabled: true
+    detection_tolerance: 0.001  # 0.1%
+    min_touches: 2
+
+  # Premium/Discount Zones
+  premium_discount:
+    enabled: true
+    use_ote: true  # Optimal Trade Entry (62-79% fib)
+    ote_buy_range: [0.62, 0.79]
+    ote_sell_range: [0.62, 0.79]
+
+  # Break of Structure / Change of Character
+  structure:
+    detect_bos: true
+    detect_choch: true
+    detect_mss: true
+    min_structure_size: 0.005  # 0.5% minimum move
+
+  # Institutional Order Flow
+  order_flow:
+    enabled: true
+    volume_surge_threshold: 1.5
+    body_wick_ratio_min: 0.6
+
+  # Silver Bullet / Kill Zones
+  killzones:
+    enabled: true
+    asian: [20, 23]      # 20:00-23:00 UTC
+    london: [2, 5]       # 02:00-05:00 UTC
+    ny_am: [13, 16]      # 13:00-16:00 UTC (08:30-11:00 EST)
+    ny_pm: [18, 21]      # 18:00-21:00 UTC (13:30-16:00 EST)
+    only_trade_killzones: false  # Set true to trade ONLY in killzones
+
+  # Power of Three
+  power_of_three:
+    enabled: true
+    accumulation_range_factor: 1.5
+    manipulation_volatility_factor: 3.0
+
+  # Volume Profile
+  volume_profile:
+    enabled: true
+    bins: 20
+    use_poc: true  # Point of Control
+    use_value_area: true  # VAH/VAL
+
+# ============================================
+# MULTI-SYMBOL MANAGEMENT
+# ============================================
+multi_symbol:
+  enabled: true
+  max_symbols_active: 3  # Trade max 3 symbols simultaneously
+  correlation_threshold: 0.7
+  max_correlated_positions: 2
+  min_volatility: 0.002  # 0.2% ATR minimum
+  max_volatility: 0.10   # 10% ATR maximum
+  volatility_lookback: 100
+  rebalance_interval_minutes: 60
+
+# ============================================
+# ADVANCED RISK MANAGEMENT
+# ============================================
+risk:
+  # Base Risk
+  risk_pct_per_trade: 0.5  # 0.5% per trade
+  max_single_position_pct: 2.0  # Max 2% per position
+  max_portfolio_exposure: 10.0  # Max 10% total exposure
+
+  # Loss Limits
+  max_daily_loss_pct: 5.0
+  max_weekly_loss_pct: 10.0
+  max_monthly_loss_pct: 15.0
+  max_drawdown_pct: 20.0
+
+  # Position Limits
+  max_concurrent_positions: 3
+  max_pending_orders: 2
+  max_correlated_exposure: 5.0  # Max 5% in correlated positions
+
+  # Kelly Criterion
+  use_kelly_criterion: true
+  kelly_fraction: 0.25  # Use 25% of full Kelly
+  min_trades_for_kelly: 30
+
+  # Adaptive Risk
+  adaptive_risk: true
+  risk_scaling_factor: 1.0
+  reduce_risk_after_loss: true
+  increase_risk_after_win: false
+
+  # Consecutive Loss Protection
+  max_consecutive_losses: 3
+  halt_after_consecutive_losses: true
+
+# ============================================
+# ADVANCED POSITION MANAGEMENT
+# ============================================
+position_management:
+  # Trailing Stop
+  trailing_stop:
+    enabled: true
+    activation_pct: 1.0  # Activate after 1% profit
+    trailing_distance_pct: 0.5  # Trail 0.5% from peak
+    trailing_step_pct: 0.25  # Move in 0.25% steps
+
+  # Break-Even
+  break_even:
+    enabled: true
+    activation_pct: 0.5  # Activate after 0.5% profit
+    buffer_pct: 0.1  # Buffer beyond entry
+
+  # Partial Profit Taking
+  partial_profit:
+    enabled: true
+    levels:
+      - pct: 1.0   # At 1% profit
+        close_pct: 30  # Close 30% of position
+      - pct: 2.0   # At 2% profit
+        close_pct: 30  # Close another 30%
+      - pct: 3.0   # At 3% profit
+        close_pct: 40  # Close remaining 40%
+
+  # Time-Based Exit
+  max_position_hold_hours: 24
+
+# ============================================
+# MACHINE LEARNING
+# ============================================
+machine_learning:
+  enabled: true
+  model_path: ./models
+
+  # Signal Filtering
+  signal_filter:
+    enabled: true
+    min_confidence: 0.6
+    use_for_all_signals: true
+
+  # Market Regime Detection
+  regime_detection:
+    enabled: true
+    update_interval_minutes: 15
+    regimes:
+      - trending_bullish
+      - trending_bearish
+      - ranging
+      - high_volatility
+
+  # Training
+  auto_retrain: true
+  retrain_interval_trades: 20
+  min_training_samples: 50
+  max_training_samples: 1000
+
+# ============================================
+# SIGNAL GENERATION
+# ============================================
+signals:
+  min_signal_score: 6  # Minimum score out of 10
+  min_rr_ratio: 1.5    # Minimum risk:reward ratio
+
+  # Signal Weights
+  weights:
+    htf_trend_alignment: 3
+    structure_alignment: 2
+    zone_quality: 3
+    liquidity_sweep: 2
+    order_flow: 2
+    killzone_timing: 1
+    ml_confidence: 2
+
+  # Entry/Exit Calculation
+  atr_period: 14
+  atr_entry_mult: 0.3   # Entry distance from zone
+  sl_atr_mult: 1.5      # Stop loss distance
+  tp_atr_mult: 3.0      # Take profit distance
+
+  # Duplicate Prevention
+  duplicate_check_minutes: 30
+  min_distance_between_signals: 0.002  # 0.2%
+
+# ============================================
+# TELEGRAM NOTIFICATIONS
+# ============================================
+telegram:
+  enabled: false  # Set true to enable (configure in .env)
+  notify_signals: true
+  notify_trades: true
+  notify_errors: true
+  notify_daily_summary: true
+  notify_risk_limits: true
+  notify_regime_changes: true
+
+# ============================================
+# SESSION MANAGEMENT
+# ============================================
+sessions:
+  london:
+    start: "07:00"
+    end: "16:00"
+  newyork:
+    start: "12:00"
+    end: "21:00"
+  asian:
+    start: "23:00"
+    end: "07:00"
+
+  enabled_sessions:
+    - london
+    - newyork
+
+  # News Filter (future feature)
+  avoid_news_events: true
+  news_buffer_minutes: 30
+
+# ============================================
+# BACKTESTING
+# ============================================
+backtest:
+  enabled: false
+  start_date: "2023-01-01"
+  end_date: "2024-12-31"
+  initial_balance: 10000
+  commission_per_lot: 7.0
+  slippage_points: 2
+
+# ============================================
+# PERFORMANCE TRACKING
+# ============================================
+persistence:
+  sqlite_file: ./data/ledger.sqlite
+  signals_csv: ./data/signals.csv
+  trades_csv: ./data/trades.csv
+  backup_interval_seconds: 3600
+  keep_backups: 7
+
+# ============================================
+# SYSTEM SETTINGS
+# ============================================
+system:
+  loop_interval_seconds: 1
+  safe_mode_on_error: true
+  max_consecutive_errors: 5
+  maintenance_interval_seconds: 300
+
+  # Logging
+  log_level: INFO  # DEBUG, INFO, WARNING, ERROR
+  log_file: ./logs/trading_bot.log
+  log_max_bytes: 10485760  # 10MB
+  log_backup_count: 5
+
+# ============================================
+# MT5 CONNECTION (Use environment variables!)
+# ============================================
+mt5:
+  # DO NOT hardcode credentials here! Use .env file
+  path: null  # Will be read from environment
+  timeout_seconds: 60
+  retry_attempts: 3
+  retry_delay_seconds: 5

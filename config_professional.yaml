@@ -1,0 +1,237 @@
+# ============================================================================
+# PROFESSIONAL CRYPTO TRADING BOT - UNIFIED CONFIGURATION
+# ============================================================================
+#
+# This is the ONLY config file you need. It consolidates all settings for:
+# - Live trading
+# - Demo trading
+# - Backtesting
+# - All account sizes (micro to standard)
+#
+# QUICK START:
+#   python main_advanced.py --config config_professional.yaml --mode demo
+#
+# For backtesting:
+#   python run_backtest.py --config config_professional.yaml \
+#     --start-date 2024-10-01 --end-date 2024-11-01 --balance 1000
+#
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# TRADING SYMBOL
+# ----------------------------------------------------------------------------
+symbol: 'BTCUSDm'  # Crypto symbol to trade
+# Other options: ETHUSDm, SOLUSDm, etc.
+
+# ----------------------------------------------------------------------------
+# TIMEFRAMES (Multi-Timeframe Analysis)
+# ----------------------------------------------------------------------------
+timeframes:
+  high: 'H4'   # Higher timeframe (HTF) - for trend direction
+  med: 'H1'    # Medium timeframe (MTF) - for entry signals
+  low: 'M15'   # Lower timeframe (LTF) - for precise entries
+
+# ----------------------------------------------------------------------------
+# TRADING MODE (Will be overridden by --mode command line arg)
+# ----------------------------------------------------------------------------
+mode: 'live'  # Options: 'demo', 'live', 'dry_run'
+
+# ----------------------------------------------------------------------------
+# SYMBOL SPECIFICATIONS (for backtest - will auto-fetch from MT5 if available)
+# ----------------------------------------------------------------------------
+symbol_specs:
+  point: 0.01           # Minimum price change
+  digits: 2             # Decimal places
+  contract_size: 1.0    # Contract size (1 BTC)
+  min_lot: 0.01         # Minimum lot size
+  max_lot: 100.0        # Maximum lot size
+  lot_step: 0.01        # Lot size step
+  tick_size: 0.01       # Tick size
+  tick_value: 1.0       # Value per tick
+  spread: 20            # Typical spread in points
+  stops_level: 0        # Minimum stops level
+  freeze_level: 0       # Freeze level
+
+# ----------------------------------------------------------------------------
+# RISK MANAGEMENT (Core Settings)
+# ----------------------------------------------------------------------------
+risk_pct_per_trade: 0.5          # Risk per trade (% of balance)
+max_daily_loss_pct: 5.0          # Max daily loss (% of balance)
+max_weekly_loss_pct: 10.0        # Max weekly loss
+max_monthly_loss_pct: 15.0       # Max monthly loss
+max_exposure_pct: 2.0            # Max total exposure
+max_concurrent_trades: 3         # Max simultaneous positions
+max_single_position_pct: 2.0     # Max single position size
+max_correlated_exposure: 5.0     # Max correlated exposure
+
+# Position Management
+enable_trailing_stop: true       # Enable trailing stops
+trailing_activation_pct: 1.0     # Activate trailing at X% profit
+trailing_distance_pct: 0.5       # Trail by X% from peak
+trailing_step_pct: 0.25          # Move in steps of X%
+
+enable_break_even: true          # Enable break-even
+break_even_activation_pct: 0.5   # Move to BE at X% profit
+break_even_buffer_pct: 0.1       # BE buffer (small profit lock)
+
+enable_partial_profit: true      # Enable partial profit taking
+partial_profit_levels:
+  - pct: 1.0                     # At 1% profit
+    close_pct: 30                # Close 30% of position
+  - pct: 2.0                     # At 2% profit
+    close_pct: 30                # Close another 30%
+  - pct: 3.0                     # At 3% profit
+    close_pct: 40                # Close final 40%
+
+max_position_hold_hours: 24      # Max hours to hold position
+
+# ----------------------------------------------------------------------------
+# ADVANCED RISK MANAGEMENT (Kelly Criterion & Adaptive Sizing)
+# ----------------------------------------------------------------------------
+kelly_fraction: 0.25             # Use 25% of full Kelly (conservative)
+min_trades_for_kelly: 20         # Min trades before using Kelly
+volatility_lookback: 20          # Bars for volatility calculation
+risk_scaling_factor: 1.0         # Dynamic risk scaling
+
+# ----------------------------------------------------------------------------
+# SMALL CAPITAL OPTIMIZATION
+# ----------------------------------------------------------------------------
+# Account tiers are automatically detected based on balance:
+# - Micro: $0-$500
+# - Small: $500-$1000
+# - Medium: $1000-$2000
+# - Standard: >$2000
+#
+# Settings adjust automatically per tier. No manual configuration needed.
+
+# ----------------------------------------------------------------------------
+# SIGNAL GENERATION SETTINGS
+# ----------------------------------------------------------------------------
+min_signal_score: 6              # Minimum signal score (0-10)
+min_rr_ratio: 1.5                # Minimum risk:reward ratio
+max_spread: 50                   # Maximum spread (points)
+
+# Order Block Settings
+ob_lookback: 50                  # Bars to look back for order blocks
+ob_min_body_size: 0.0001         # Minimum OB body size
+ob_strength_threshold: 2.0       # Minimum OB strength
+
+# Fair Value Gap Settings
+fvg_min_gap_points: 10           # Minimum FVG size (points)
+fvg_lookback: 30                 # Bars to look back for FVGs
+
+# Kill Zone Trading
+enable_killzone_filter: true     # Only trade during kill zones
+killzones:
+  asian: [0, 3]                  # Asian session (UTC hours)
+  london: [7, 10]                # London open
+  newyork: [13, 16]              # NY open
+
+# ----------------------------------------------------------------------------
+# ML SIGNAL FILTER (Machine Learning)
+# ----------------------------------------------------------------------------
+ml_enabled: true                 # Enable ML signal filtering
+model_path: './models'           # Path to ML models
+max_training_samples: 1000       # Max samples to store
+min_samples_for_training: 50     # Min samples before training
+min_ml_confidence: 0.6           # Minimum ML confidence score
+
+# ----------------------------------------------------------------------------
+# BACKTESTING SETTINGS
+# ----------------------------------------------------------------------------
+backtest_slippage_pips: 2        # Simulated slippage (pips)
+backtest_commission_per_lot: 0.0 # Commission per lot ($)
+backtest_spread_multiplier: 1.0  # Spread multiplier (1.0 = normal)
+signal_check_interval: 5         # Check signals every N bars (higher = faster)
+
+# ----------------------------------------------------------------------------
+# ORDER MANAGEMENT
+# ----------------------------------------------------------------------------
+magic: 123456                    # Magic number for orders
+pending_expiry_min: 20           # Pending order expiry (minutes)
+max_pending: 2                   # Max pending orders per symbol
+use_fixed_lot: false             # Use fixed lot size (ignore risk calc)
+fixed_lot: 0.01                  # Fixed lot if enabled
+
+# ----------------------------------------------------------------------------
+# SYSTEM SETTINGS
+# ----------------------------------------------------------------------------
+system:
+  log_level: 'INFO'              # Logging level (DEBUG, INFO, WARNING, ERROR)
+  max_retries: 3                 # Max retries for failed operations
+  retry_delay: 2                 # Delay between retries (seconds)
+
+# ----------------------------------------------------------------------------
+# TELEGRAM NOTIFICATIONS (Optional)
+# ----------------------------------------------------------------------------
+telegram:
+  enabled: false                 # Enable Telegram notifications
+  # Set these in .env file for security:
+  # TELEGRAM_BOT_TOKEN=your_bot_token
+  # TELEGRAM_CHAT_ID=your_chat_id
+  notify_signals: true           # Notify on signals
+  notify_trades: true            # Notify on trades
+  notify_errors: true            # Notify on errors
+  notify_daily_summary: true     # Daily performance summary
+
+# ============================================================================
+# NOTES
+# ============================================================================
+#
+# WHEN DOES THIS BOT TRADE?
+#
+# The bot trades based on Smart Money Concepts (SMC) / ICT methodology:
+#
+# 1. MARKET CONDITIONS:
+#    - Trending markets (both bullish and bearish)
+#    - After liquidity sweeps (stop hunts)
+#    - During market structure shifts (MSS/CHoCH)
+#    - In premium/discount zones
+#
+# 2. SPECIFIC ENTRY CONDITIONS:
+#    - Order Block (OB) identified on higher timeframe
+#    - Fair Value Gap (FVG) present
+#    - Price in discount zone (for buys) or premium zone (for sells)
+#    - Break of Structure (BOS) confirming trend
+#    - During kill zones (London/NY session opens)
+#    - HTF and MTF trend aligned
+#    - Signal score >= 6/10
+#    - Risk:Reward >= 1.5:1
+#
+# 3. WHAT IT AVOIDS:
+#    - Trading during low liquidity (Asian session)
+#    - High spread conditions (spread > 50 points)
+#    - Choppy/ranging markets
+#    - Signals with conflicting timeframe trends
+#    - Low probability setups (score < 6)
+#    - Poor risk:reward (< 1.5:1)
+#
+# 4. RISK MANAGEMENT:
+#    - Never risks more than 0.5% per trade (adjustable)
+#    - Stops trading after daily loss limit
+#    - Reduces risk after consecutive losses
+#    - Uses Kelly Criterion for optimal sizing
+#    - Automatically adjusts for small accounts
+#
+# ============================================================================
+# EXAMPLE WORKFLOWS
+# ============================================================================
+#
+# DEMO TRADING:
+#   python main_advanced.py --config config_professional.yaml --mode demo
+#
+# LIVE TRADING:
+#   python main_advanced.py --config config_professional.yaml --mode live
+#
+# DRY RUN (No real orders):
+#   python main_advanced.py --config config_professional.yaml --mode dry_run
+#
+# BACKTESTING:
+#   python run_backtest.py \
+#     --config config_professional.yaml \
+#     --start-date 2024-10-01 \
+#     --end-date 2024-11-01 \
+#     --balance 1000 \
+#     --verbose
+#
+# ============================================================================

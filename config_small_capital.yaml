@@ -1,0 +1,260 @@
+# SMALL CAPITAL TRADING BOT CONFIGURATION
+# Optimized for accounts $500-$2000
+# Focus: Capital Preservation + Consistent Profits
+
+# ============================================
+# CRITICAL: SECURE YOUR CREDENTIALS
+# ============================================
+# DO NOT put credentials here! Use .env file
+# Copy .env.example to .env and add your details
+
+# ============================================
+# TRADING MODE
+# ============================================
+mode: demo  # ALWAYS start with demo! Change to 'live' only after 2 weeks of profitable demo trading
+
+# ============================================
+# TRADING SYMBOL (Start with just ONE)
+# ============================================
+symbol: BTCUSDm  # Start with Bitcoin only - most liquid
+
+# For accounts > $1000, you can add:
+# symbols: [BTCUSD, ETHUSD]
+
+# ============================================
+# TIMEFRAMES (Multi-timeframe analysis)
+# ============================================
+timeframes:
+  high: H1    # Trend direction
+  med: M15    # Structure & zones
+  low: M5     # Entry refinement
+
+# ============================================
+# RISK MANAGEMENT (CRITICAL FOR SMALL ACCOUNTS!)
+# ============================================
+
+# Risk per trade (will be auto-adjusted by account size)
+risk_pct_per_trade: 0.5  # 0.5% per trade - NEVER increase above 1%!
+
+# Use fixed lot for testing (recommended for first week)
+use_fixed_lot: true  # Set to true for testing with 0.01 lots
+fixed_lot: 0.01       # Minimum lot size for testing
+
+# Daily protection limits
+max_daily_loss_pct: 2.0    # Stop trading if lose 2% in one day
+max_exposure_pct: 1.5      # Never risk more than 1.5% total
+
+# Position limits
+max_concurrent_trades: 2    # Max 2 positions at once for small accounts
+max_pending: 1             # Max 1 pending order
+
+# Consecutive loss protection
+max_consecutive_losses: 2   # Halt after 2 losses (vs 3 for larger accounts)
+
+# ============================================
+# SIGNAL QUALITY (Higher threshold = better quality)
+# ============================================
+
+# Minimum signal score (0-10)
+min_signal_score: 5  # Only take signals 7/10 or better for small accounts
+
+# Minimum Risk:Reward ratio
+min_rr: 2.0  # Require at least 2:1 R:R for small accounts
+
+# Signal weights (total should be ~10)
+signal_weights:
+  htf_trend_alignment: 3      # Higher timeframe trend (critical!)
+  structure_alignment: 2      # Market structure
+  zone_quality: 3             # Order block/FVG quality
+  liquidity_sweep: 1          # Liquidity taken
+  ml_confidence: 1            # Machine learning confidence
+
+# ============================================
+# SMC/ICT SETTINGS
+# ============================================
+
+# Order Blocks
+ob_lookback_bars: 30
+ob_min_strength: 2.5  # Higher threshold for quality
+
+# Fair Value Gaps
+fvg_min_size_points: 5  # Larger gaps = higher quality
+fvg_max_age_bars: 40
+
+# Liquidity
+liquidity_sweep_points: 3
+
+# ============================================
+# INDICATORS
+# ============================================
+ema_high: 21
+atr_period: 14
+
+# Entry/Exit ATR multipliers
+atr_entry_mult: 0.3   # Tighter entries for small accounts
+sl_atr_mult: 1.5      # Stop loss distance
+tp_atr_mult: 3.0      # Take profit (2:1 R:R minimum)
+
+# ============================================
+# POSITION MANAGEMENT (Protect profits fast!)
+# ============================================
+
+# Break-even (move SL to entry + small buffer)
+use_break_even: true
+break_even_trigger_pct: 0.3  # Move to BE at just 0.3% profit!
+break_even_buffer_pips: 2    # Small buffer above entry
+
+# Trailing stop
+use_trailing_stop: true
+trailing_activation_pct: 0.7  # Start trailing at 0.7% profit
+trailing_distance_pct: 0.25   # Trail tightly (0.25% from peak)
+
+# Partial profit taking (CRITICAL for small accounts!)
+use_partial_close: true
+partial_close_levels:
+  - trigger_pct: 0.5   # At 0.5% profit
+    close_pct: 40      # Close 40% of position
+  - trigger_pct: 1.0   # At 1% profit
+    close_pct: 30      # Close another 30%
+  - trigger_pct: 1.5   # At 1.5% profit
+    close_pct: 30      # Close remaining 30%
+
+# Maximum holding time
+max_position_hours: 12  # Close after 12 hours regardless
+
+# ============================================
+# TRADING SESSIONS (Focus on best times)
+# ============================================
+sessions:
+  london:
+    start: "07:00"
+    end: "16:00"
+  newyork:
+    start: "12:00"
+    end: "21:00"
+  asian:
+    start: "23:00"
+    end: "07:00"
+
+# Small accounts should focus on high-liquidity sessions
+enabled_sessions:
+  - london
+  - newyork
+  - asian
+
+# Avoid trading during:
+# - Late Asian session (low liquidity)
+# - Major news events (high volatility)
+# - First hour after opening (erratic moves)
+
+# ============================================
+# KILL ZONES (ICT optimal times - CRITICAL!)
+# ============================================
+
+# For MICRO accounts (<$500): ONLY trade during kill zones
+only_trade_killzones: false  # Set to true for micro accounts
+
+kill_zones:
+  london: [2, 5]        # 02:00-05:00 UTC (London open)
+  ny_am: [13, 16]       # 13:00-16:00 UTC (NY morning)
+  ny_pm: [18, 21]       # 18:00-21:00 UTC (NY afternoon)
+
+# ============================================
+# SPREAD & MARKET CONDITIONS
+# ============================================
+max_spread: 1800  # Max spread in points (tighter for small accounts)
+
+# Minimum signal interval (prevent overtrading)
+min_signal_interval_minutes: 30  # At least 30 min between signals
+
+# ============================================
+# MACHINE LEARNING (Optional but recommended)
+# ============================================
+machine_learning:
+  enabled: false
+  min_confidence: 0.65  # 65% confidence minimum for small accounts
+  model_type: xgboost
+  retrain_every_n_trades: 100
+  min_samples_for_training: 50
+
+# ============================================
+# SYSTEM SETTINGS
+# ============================================
+system:
+  log_level: INFO  # Use DEBUG for first week to see everything
+  loop_interval_seconds: 1  # Analysis frequency
+  maintenance_interval_seconds: 300  # 5 minutes
+
+# ============================================
+# TELEGRAM NOTIFICATIONS
+# ============================================
+telegram:
+  enabled: true  # Set to true after configuring in .env
+  notify_signals: true
+  notify_trades: true
+  notify_errors: true
+  notify_daily_summary: true
+
+# ============================================
+# DATA PERSISTENCE
+# ============================================
+persistence:
+  sqlite_file: ./data/ledger.sqlite
+  signals_csv: ./data/signals.csv
+  trades_csv: ./data/trades.csv
+  backup_interval: 3600  # Backup every hour
+
+# ============================================
+# MT5 CONNECTION
+# ============================================
+mt5:
+  # DO NOT put credentials here! Use .env file
+  path: C:\Program Files\MetaTrader 5\terminal64.exe  # Will be read from MT5_PATH environment variable
+  timeout: 60
+  retry_attempts: 3
+
+# Magic number (identifies your bot's trades)
+magic: 234567  # Change this to your unique number
+
+# ============================================
+# EMERGENCY SETTINGS
+# ============================================
+
+# Close all positions in safe mode?
+close_on_safe_mode: true
+
+# Maximum errors before safe mode
+max_errors_before_safe_mode: 5
+
+# ============================================
+# GROWTH TARGETS (Realistic for small capital)
+# ============================================
+
+# These are targets, not guarantees!
+# Daily target: 0.5-1.5% (compounding)
+# Weekly target: 2-5%
+# Monthly target: 10-20%
+
+# Key Success Factors:
+# 1. Strict risk management (NEVER exceed 2% daily loss)
+# 2. High quality signals only (score >= 7)
+# 3. Quick profit protection (BE at 0.3%)
+# 4. Limited trades per day (quality over quantity)
+# 5. Trade only during kill zones
+# 6. Paper trade for 2 weeks first!
+
+# ============================================
+# RECOMMENDED STARTING CAPITAL
+# ============================================
+
+# Minimum: $500 (micro account)
+# Comfortable: $1000 (small account)
+# Ideal: $2000+ (medium account)
+
+# With $500 and 0.5% risk:
+# - Risk per trade: $2.50
+# - Target profit per trade: $5-7.50 (2-3:1 R:R)
+# - Daily target: $5-15 (1-3%)
+# - Monthly target: $100-150 (20-30%)
+
+# Remember: Protect capital first, profits second!
