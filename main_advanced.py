@@ -469,6 +469,18 @@ class AdvancedTradingBot:
                                     # Add position to tracker
                                     if result.get('filled'):
                                         ticket = result.get('ticket')
+
+                                        # Get current ATR for dynamic position management
+                                        current_atr = 0.0
+                                        try:
+                                            atr_df = self.mt5_client.get_bars('M5', 20)
+                                            if atr_df is not None and len(atr_df) >= 14:
+                                                from indicators import Indicators
+                                                atr_series = Indicators.atr(atr_df, 14)
+                                                current_atr = atr_series.iloc[-1] if len(atr_series) > 0 else 0
+                                        except Exception as e:
+                                            self.logger.debug(f"Could not get ATR for position: {e}")
+
                                         self.position_manager.add_position(
                                             ticket=ticket,
                                             symbol=signal['symbol'],
@@ -477,7 +489,8 @@ class AdvancedTradingBot:
                                             volume=lot_size,
                                             stop_loss=signal['sl_price'],
                                             take_profit=signal['tp_price'],
-                                            open_time=datetime.utcnow()
+                                            open_time=datetime.utcnow(),
+                                            atr=current_atr
                                         )
 
                                     # Send trade notification
